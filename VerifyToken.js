@@ -4,15 +4,22 @@ import UserModel from "./models/UserModel.js";
 
 
 export const verifyToken = async (req, res, next) => {
-    const token = req.headers.authorization.split(" ")[1];
-    // console.log(token)
-    if (!token) { return next(createError(401, "Please login")) }
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        // console.log(token)
+        if (!token) { return next(createError(401, "Please login")) }
 
-    jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
-        if (error) { return next(createError(401, "Invalid Token")) }
-        req.user = user;
-        next()
-    });
+        jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
+            if (error) { return next(createError(401, "Invalid Token")) }
+            req.user = user;
+            next()
+        });
+    } catch (error) {
+        return res.status(500).json({
+            msg: error.message
+        })
+    }
+
 }
 export const checkToken = async (req, res, next) => {
     try {
