@@ -13,8 +13,8 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-// app.use(cors({credentials: true , origin : "https://this-is-a-youtube-clone.netlify.app"}))
-app.use(cors({credentials: true , origin : "http://localhost:3000"}))
+app.use(cors({credentials: true , origin : "https://this-is-a-youtube-clone.netlify.app"}))
+// app.use(cors({credentials: true , origin : "http://localhost:3000"}))
 
 
 app.listen(process.env.PORT || 5000 , async() => {

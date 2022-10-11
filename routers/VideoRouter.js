@@ -1,11 +1,15 @@
 import express from 'express';
-import { addVideo, addView, deleteVideo, dislikeVid, getRandomVideo, getSubscribedVideo, getTrendingVideo, getVideo, getVideoByTag, getVideoByTitle, likeVid, updateVideo } from '../controllers/VideoController.js';
+import { addVideo, addView, deleteVideo, dislikeVid, getRandomVideo, getSubscribedVideo, getTotalViewsOfAChannel, getTrendingVideo, getUserVideos, getVideo, getVideoByTag, getVideoByTitle, likeVid, updateVideo } from '../controllers/VideoController.js';
 import { verifyToken } from '../VerifyToken.js';
 const VideoRouter = express.Router();
 
 // GET VIDEO
 VideoRouter.route('/find/:videoId')
 .get(getVideo)
+
+// GET USER VIDEO
+VideoRouter.route('/all/:id')
+.get(getUserVideos)
 
 // CREATE VIDEO
 VideoRouter.route('/')
@@ -27,6 +31,9 @@ VideoRouter.route('/dislike/:videoId')
 // VIEW++
 VideoRouter.route('/view/:videoId')
 .put(addView) 
+
+// Total Views
+VideoRouter.get('/totalviews/:id' , getTotalViewsOfAChannel)
 
 // GET TRENDING VIDEOS
 VideoRouter.route('/trend') 

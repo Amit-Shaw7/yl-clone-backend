@@ -28,6 +28,19 @@ export const getVideo = async (req, res, next) => {
         });
     } catch (error) { return next(error); }
 }//done
+
+export const getUserVideos = async (req, res, next) => {
+    try {
+        const videos = await VideoModel.find({ userId: req.params.id });
+        if (!videos) { return res.status(204).json({ msg: "No Videos Found" }) }
+        return res.status(200).json({ msg: "User Videos fetched succesfully ", videos })
+    } catch (error) {
+        return res.status(500).json({
+            msg: "Internal Server error",
+            error: error.mesage
+        });
+    }
+}
 export const updateVideo = async (req, res, next) => {
     try {
         const video = await VideoModel.findById(req.params.videoId);
@@ -51,11 +64,11 @@ export const updateVideo = async (req, res, next) => {
 export const deleteVideo = async (req, res, next) => {
     try {
         const video = await VideoModel.findById(req.params.videoId);
-        if (!video) { return next(createError(404, "Video not find")); }
+        if (!video) { return next(createError(404, "No video found")); }
 
         if (video.userId === req.user.id) {
             await VideoModel.findByIdAndDelete(req.params.videoId);
-            return res.status(500).json({
+            return res.status(200).json({
                 msg: "video deleted succesfully"
             });
         } else { return createError(401, "You can only delete your video"); }
@@ -158,8 +171,30 @@ export const getVideoByTitle = async (req, res, next) => {
         const videos = await VideoModel.find({ title: { $regex: title, $options: "i" } });
 
         return res.status(200).json({
-            msg: "Trending Video fetched succesfully",
+            msg: "Searched Video fetched succesfully",
             videos
         });
     } catch (error) { return next(error); }
+}
+
+export const getTotalViewsOfAChannel = async (req, res, next) => {
+    try {
+        const channel = await UserModel.findById(req.params.id);
+        if (!channel) { return res.status(404).json({ msg: "No Channel found" }); }
+
+        const allVideos = await VideoModel.find({ userId: req.params.id });
+        if (allVideos.length === 0) { return res.status(200).json({ msg: "NO Videos Found", views: 0 }) }
+
+        let views = 0;
+        allVideos.map((video) => {
+            views += video.views;
+        });
+
+        return res.status(200).json({ msg: "Total views retrieved", views })
+    } catch (error) {
+        return res.status(500).json({
+            msg: "Internal server error",
+            error: error.message
+        })
+    }
 }
